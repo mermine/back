@@ -1,4 +1,5 @@
 // schema/childrenSchema.ts
+import { Gender } from "@prisma/client";
 import { z } from "zod";
 
 export const createChildSchema = z.object({
@@ -7,9 +8,8 @@ export const createChildSchema = z.object({
   dateOfBirth: z.string().refine((val) => !isNaN(Date.parse(val)), {
     message: "Invalid date format",
   }),
-  gender: z.enum(["male", "female", "other"], {
-    errorMap: () => ({ message: "Gender must be male, female, or other" }),
-  }),
+  gender: z.nativeEnum(Gender).default(Gender.MALE),
+  hasDisability: z.boolean().default(false),
 });
 
 export const updateChildSchema = z.object({
@@ -20,5 +20,6 @@ export const updateChildSchema = z.object({
       message: "Invalid date format",
     })
     .optional(),
-  gender: z.enum(["male", "female", "other"]).optional(),
+  gender: z.nativeEnum(Gender).default(Gender.MALE),
+  hasDisability: z.boolean().default(false),
 });

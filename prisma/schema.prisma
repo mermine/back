@@ -46,6 +46,20 @@ model User {
   maritalStatus MaritalStatus @default(SINGLE)
   jobTitle String?
   service String?
+  children Child[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+
+model Child {
+  id          String   @id @default(uuid())
+  name        String
+  dateOfBirth String
+  gender      Gender @default(MALE)
+  userId      String
+  parent      User     @relation(fields: [userId], references: [id])
+  hasDisability Boolean @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
