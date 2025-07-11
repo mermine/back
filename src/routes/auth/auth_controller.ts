@@ -131,6 +131,53 @@ const app = new Hono()
       console.error("Error fetching users:", error);
       return c.json({ error: "An error occurred while fetching users." }, 500);
     }
-  });
+  })
+  .get("/affiche/:id", async (c) => {
+    try {
+      const { id } = c.req.param();
+      const user = await db.user.findUnique({
+        where: { id },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          phone: true,
+          role: true,
+          dateOfBirth: true,
+          cinNumber: true,
+          cnssNumber: true,
+          maritalStatus: true,
+          jobTitle: true,
+          service: true,
+        },
+      });
+      if (!user) {
+      return c.json({ error: "User not found." }, 404);
+    }
+
+    return c.json({ message: "User fetched successfully.", data: user });
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    return c.json({ error: "An error occurred while fetching user." }, 500);
+  }
+})
+.delete("/delete/:id", async (c) => {
+  try {
+    const { id } = c.req.param();
+    const user = await db.user.findUnique({ where: { id } });
+
+    if (!user) {
+      return c.json({ error: "User not found." }, 404);
+    }
+
+    await db.user.delete({ where: { id } });
+
+    return c.json({ message: "User deleted successfully." });
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    return c.json({ error: "An error occurred while deleting user." }, 500);
+  }
+})
+
 
 export default app;

@@ -1,0 +1,23 @@
+
+
+generator children {
+  provider = "prisma-children-js"
+}
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+model Child {
+  id          String   @id @default(uuid())
+  name        String
+  dateOfBirth DateTime
+  gender      String
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+}
