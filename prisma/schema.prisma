@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -31,6 +25,22 @@ enum MaritalStatus {
   WIDOWED
 }
 
+enum LeaveStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
+enum LeaveType {
+  ANNUAL
+  SICK
+  MATERNITY
+  PATERNITY
+  UNPAID
+  OTHER
+}
+
 
 model User {
   id String @id @default(cuid())
@@ -47,7 +57,7 @@ model User {
   jobTitle String?
   service String?
   children Child[]
-  demandesDeConge DemandeDeConge[]
+  leaveRequests LeaveRequest[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -64,23 +74,31 @@ model Child {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
+
+
 model TypeConge {
   id            String            @id @default(uuid())
-  nom           String
+  name          String
   description   String?
-  demandes      DemandeDeConge[]  // One-to-many relation to Demande
+  type          LeaveType @default(ANNUAL)
+  leaves        LeaveRequest[]
 }
 
-model DemandeDeConge {
+
+
+model LeaveRequest {
   id            String     @id @default(uuid())
-  dateDebut     DateTime
-  dateFin       DateTime
-  statut        String     // e.g., "en attente", "accepté", "rejeté"
-  motif         String?
+  startDate     DateTime
+  endDate       DateTime
+  status        LeaveStatus @default(PENDING)
+  reason        String?
   userId        String
   typeCongeId   String
+  comment       String?
+  attachmentUrl String?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
 
   user          User       @relation(fields: [userId], references: [id])
   typeConge     TypeConge  @relation(fields: [typeCongeId], references: [id])
 }
-
