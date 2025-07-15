@@ -47,6 +47,7 @@ model User {
   jobTitle String?
   service String?
   children Child[]
+  demandesDeConge DemandeDeConge[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -63,3 +64,23 @@ model Child {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
+model TypeConge {
+  id            String            @id @default(uuid())
+  nom           String
+  description   String?
+  demandes      DemandeDeConge[]  // One-to-many relation to Demande
+}
+
+model DemandeDeConge {
+  id            String     @id @default(uuid())
+  dateDebut     DateTime
+  dateFin       DateTime
+  statut        String     // e.g., "en attente", "accepté", "rejeté"
+  motif         String?
+  userId        String
+  typeCongeId   String
+
+  user          User       @relation(fields: [userId], references: [id])
+  typeConge     TypeConge  @relation(fields: [typeCongeId], references: [id])
+}
+
