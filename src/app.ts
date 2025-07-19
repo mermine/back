@@ -7,6 +7,7 @@ import child_controller from "@/routes/children/children_controller";
 import { cors } from "hono/cors";
 import leave_request from "@/routes/leave_request/leave_request_controller";
 import leaveType from "@/routes/leave_type/leave_type_controller";
+import leaveBalance from "@/routes/leave_balance/leave_balance_controller";
 
 const app = new Hono()
   .basePath("/api/v1")
@@ -17,8 +18,8 @@ const app = new Hono()
   .route("/auth", auth_controller)
   .route("/child", child_controller)
   .route("/leave-request", leave_request)
-  .route("/leave-type", leaveType);
-
+  .route("/leave-type", leaveType)
+  .route("/leave-balance", leaveBalance);
 export type AppType = typeof app;
 
 export default app;

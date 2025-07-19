@@ -58,6 +58,7 @@ model User {
   service String?
   children Child[]
   leaveRequests LeaveRequest[]
+  leaveBalances  LeaveBalance[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   // 
@@ -103,3 +104,15 @@ model LeaveRequest {
   user          User       @relation(fields: [userId], references: [id])
   typeConge     LeaveType  @relation(fields: [typeCongeId], references: [id])
 }
+
+model LeaveBalance {
+  id               String   @id @default(uuid())
+  year             Int
+  initialBalance   Float
+  usedBalance      Float    @default(0)
+  remainingBalance Float
+
+  userId           String
+  user             User     @relation(fields: [userId], references: [id])
+}
+
