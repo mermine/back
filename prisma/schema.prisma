@@ -40,7 +40,27 @@ enum LeaveTypeEnum {
   UNPAID
   OTHER
 }
+enum Services {
+  EMERGENCY
+  INTERNAL 
+  CARDIOLOGY	
+  PULMONOLOGY
+  NEUROLOGY
+  ONCOLOGY	
+  ORTHOPEDICS
+  PEDIATRICS
+  GYNECOLOGY_AND_OBSTETRICS
+  GASTROENTEROLOGY
+  NEPHROLOGY
+  DERMATOLOGY	
+  PSYCHIATRY	
+  INFECTIOUS_DISEASES 
+  ANESTHESIOLOGY
+  RADIOLOGY
+  SURGERY
 
+
+}
 
 model User {
   id String @id @default(cuid())
@@ -55,10 +75,12 @@ model User {
   cnssNumber Int?
   maritalStatus MaritalStatus @default(SINGLE)
   jobTitle String?
-  service String?
+  service services
   children Child[]
   leaveRequests LeaveRequest[]
   leaveBalances  LeaveBalance[]
+  schedules        Schedule[] 
+  tasks            Task[]  
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   // 
@@ -116,3 +138,23 @@ model LeaveBalance {
   user             User     @relation(fields: [userId], references: [id])
 }
 
+model Schedule {
+  id          String    @id @default(uuid())
+  date        DateTime
+  startTime   DateTime
+  endTime     DateTime
+  service     services @default(EMERGENCY)
+  userId      String
+  user        User      @relation(fields: [userId], references: [id])
+}
+
+
+model Task {
+  id            String    @id @default(uuid())
+  title         String
+  description   String?
+  dueDate       DateTime?
+  isCompleted   Boolean   @default(false)
+  userId        String
+  user          User      @relation(fields: [userId], references: [id])
+}
