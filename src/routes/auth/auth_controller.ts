@@ -30,7 +30,7 @@ export const authController = new Hono()
       const token = jwt.sign(
         { userId: newUser.id, role: newUser.role },
         env.JWT_SECRET,
-        { expiresIn: "1h" }
+        { expiresIn: "24h" }
       );
 
       return c.json({
@@ -66,7 +66,7 @@ export const authController = new Hono()
       const token = jwt.sign(
         { userId: user.id, role: user.role },
         env.JWT_SECRET,
-        { expiresIn: "1h" }
+        { expiresIn: "24h" }
       );
 
       return c.json({
