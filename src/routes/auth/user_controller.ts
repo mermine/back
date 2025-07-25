@@ -3,10 +3,12 @@ import { zValidator } from "@hono/zod-validator";
 import { db } from "@/lib/prisma_client";
 import { authMiddleware } from "@/middlewares/auth_middleware";
 import { updateUserSchema } from "./schema";
+import { roleMiddleware } from "@/middlewares/role_middleware";
+import { Role } from "@prisma/client";
 
-export const userController = new Hono()
+const app = new Hono()
   .use("*", authMiddleware)
-  .get("/all", async (c) => {
+  .get("/all", roleMiddleware([Role.ADMIN]), async (c) => {
     try {
       const page = Number(c.req.query("page") || 1);
       const limit = Number(c.req.query("limit") || 10);
@@ -123,3 +125,5 @@ export const userController = new Hono()
       return c.json({ error: "Failed to delete user." }, 500);
     }
   });
+
+export default app;

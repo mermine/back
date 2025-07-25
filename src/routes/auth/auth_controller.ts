@@ -6,7 +6,7 @@ import { hashSync, compareSync } from "bcrypt";
 import { env } from "@/dotenv_config";
 import { loginSchema, registerSchema } from "./schema";
 
-export const authController = new Hono()
+const app = new Hono()
   .post("/register", zValidator("json", registerSchema), async (c) => {
     try {
       const data = c.req.valid("json");
@@ -84,3 +84,5 @@ export const authController = new Hono()
       return c.json({ error: "Login failed." }, 500);
     }
   });
+
+export default app;

@@ -2,35 +2,47 @@ import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
 import { db } from "@/lib/prisma_client";
 import { createLeaveTypeSchema, updateLeaveTypeSchema } from "./schema";
+import { authMiddleware } from "@/middlewares/auth_middleware";
+import { roleMiddleware } from "@/middlewares/role_middleware";
+import { Role } from "@prisma/client";
 
-const leaveTypeApp = new Hono()
+const app = new Hono()
+  .use("*", authMiddleware)
+  .post(
+    "/create",
+    zValidator("json", createLeaveTypeSchema),
+    roleMiddleware([Role.ADMIN]),
+    async (c) => {
+      const data = c.req.valid("json");
 
-  // Create LeaveType
-  .post("/create", zValidator("json", createLeaveTypeSchema), async (c) => {
-    const data = c.req.valid("json");
-
-    try {
-      const leaveType = await db.leaveType.create({ data });
-      return c.json({ message: "Leave type created", leaveType });
-    } catch (err) {
-      console.error("Error creating leave type:", err);
-      return c.json({ error: "Failed to create leave type" }, 500);
+      try {
+        const leaveType = await db.leaveType.create({ data });
+        return c.json({ message: "Leave type created", leaveType });
+      } catch (err) {
+        console.error("Error creating leave type:", err);
+        return c.json({ error: "Failed to create leave type" }, 500);
+      }
     }
-  })
+  )
 
   // Update LeaveType
-  .put("/update/:id", zValidator("json", updateLeaveTypeSchema), async (c) => {
-    const { id } = c.req.param();
-    const data = c.req.valid("json");
+  .put(
+    "/update/:id",
+    zValidator("json", updateLeaveTypeSchema),
+    roleMiddleware([Role.ADMIN]),
+    async (c) => {
+      const { id } = c.req.param();
+      const data = c.req.valid("json");
 
-    try {
-      const updated = await db.leaveType.update({ where: { id }, data });
-      return c.json({ message: "Leave type updated", updated });
-    } catch (err) {
-      console.error("Error updating leave type:", err);
-      return c.json({ error: "Leave type not found" }, 404);
+      try {
+        const updated = await db.leaveType.update({ where: { id }, data });
+        return c.json({ message: "Leave type updated", updated });
+      } catch (err) {
+        console.error("Error updating leave type:", err);
+        return c.json({ error: "Leave type not found" }, 404);
+      }
     }
-  })
+  )
 
   // Get all LeaveTypes
   .get("/all", async (c) => {
@@ -54,9 +66,7 @@ const leaveTypeApp = new Hono()
       return c.json({ error: "Error" }, 500);
     }
   })
-
-  // Delete LeaveType
-  .delete("/delete/:id", async (c) => {
+  .delete("/delete/:id", roleMiddleware([Role.ADMIN]), async (c) => {
     const { id } = c.req.param();
     try {
       await db.leaveType.delete({ where: { id } });
@@ -66,4 +76,4 @@ const leaveTypeApp = new Hono()
     }
   });
 
-export default leaveTypeApp;
+export default app;
