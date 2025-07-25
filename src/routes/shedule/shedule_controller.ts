@@ -11,53 +11,67 @@ type UpdateScheduleInput = z.infer<typeof updateScheduleSchema>;
 const scheduleApp = new Hono();
 
 // ➕ Create a schedule
-scheduleApp.post("/create", zValidator("json", createScheduleSchema), async (c) => {
- const data = c.req.valid("json") as CreateScheduleInput;
+scheduleApp.post(
+  "/create",
+  zValidator("json", createScheduleSchema),
+  async (c) => {
+    const data = c.req.valid("json") as CreateScheduleInput;
 
-  try {
-    const schedule = await db.Schedule.create({
-      data: {
-        date: new Date(data.date as string),
-        startTime: new Date(data.startTime as string),
-        endTime: new Date(data.endTime as string),
-        service: data.service ?? "", // Optional safety fallback
-        userId: data.userId,
-      },
-    });
-    return c.json({ message: "Schedule created", schedule });
-  } catch (err) {
-    console.error("Error creating schedule:", err);
-    return c.json({ error: "Failed to create schedule" }, 500);
+    try {
+      const schedule = await db.schedule.create({
+        data: {
+          date: new Date(data.date as string),
+          startTime: new Date(data.startTime as string),
+          endTime: new Date(data.endTime as string),
+          service: data.service, // Optional safety fallback
+          userId: data.userId,
+        },
+      });
+      return c.json({ message: "Schedule created", schedule });
+    } catch (err) {
+      console.error("Error creating schedule:", err);
+      return c.json({ error: "Failed to create schedule" }, 500);
+    }
   }
-});
+);
 
 // 🔁 Update a schedule
-scheduleApp.put("/update/:id", zValidator("json", updateScheduleSchema), async (c) => {
-  const { id } = c.req.param();
-  const data = c.req.valid("json") as UpdateScheduleInput;
+scheduleApp.put(
+  "/update/:id",
+  zValidator("json", updateScheduleSchema),
+  async (c) => {
+    const { id } = c.req.param();
+    const data = c.req.valid("json") as UpdateScheduleInput;
 
-  try {
-    const updated = await db.Schedule.update({
-      where: { id },
-      data: {
-        ...(typeof data.date === "string" && data.date ? { date: new Date(data.date) } : {}),
-        ...(typeof data.startTime === "string" && data.startTime ? { startTime: new Date(data.startTime) } : {}),
-        ...(typeof data.endTime === "string" && data.endTime ? { endTime: new Date(data.endTime) } : {}),
-        ...(data.service ? { service: data.service } : {}),
-      },
-    });
+    try {
+      const updated = await db.schedule.update({
+        where: { id },
+        data: {
+          ...(typeof data.date === "string" && data.date
+            ? { date: new Date(data.date) }
+            : {}),
+          ...(typeof data.startTime === "string" && data.startTime
+            ? { startTime: new Date(data.startTime) }
+            : {}),
+          ...(typeof data.endTime === "string" && data.endTime
+            ? { endTime: new Date(data.endTime) }
+            : {}),
+          ...(data.service ? { service: data.service } : {}),
+        },
+      });
 
-    return c.json({ message: "Schedule updated", updated });
-  } catch (err) {
-    console.error("Error updating schedule:", err);
-    return c.json({ error: "Failed to update schedule" }, 500);
+      return c.json({ message: "Schedule updated", updated });
+    } catch (err) {
+      console.error("Error updating schedule:", err);
+      return c.json({ error: "Failed to update schedule" }, 500);
+    }
   }
-});
+);
 
 // 📄 Get all schedules
 scheduleApp.get("/all", async (c) => {
   try {
-    const schedules = await db.Schedule.findMany({
+    const schedules = await db.schedule.findMany({
       include: { user: true },
     });
     return c.json({ message: "Schedules fetched", schedules });
@@ -71,7 +85,7 @@ scheduleApp.get("/show/:id", async (c) => {
   const { id } = c.req.param();
 
   try {
-    const schedule = await db.Schedule.findUnique({
+    const schedule = await db.schedule.findUnique({
       where: { id },
       include: { user: true },
     });
