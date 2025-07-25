@@ -40,7 +40,7 @@ enum LeaveTypeEnum {
   UNPAID
   OTHER
 }
-enum Services {
+enum ServiceEnum {
   EMERGENCY
   INTERNAL 
   CARDIOLOGY	
@@ -75,7 +75,7 @@ model User {
   cnssNumber Int?
   maritalStatus MaritalStatus @default(SINGLE)
   jobTitle String?
-  service services
+  service ServiceEnum @default(EMERGENCY)
   children Child[]
   leaveRequests LeaveRequest[]
   leaveBalances  LeaveBalance[]
@@ -143,7 +143,7 @@ model Schedule {
   date        DateTime
   startTime   DateTime
   endTime     DateTime
-  service     services @default(EMERGENCY)
+  service     ServiceEnum @default(EMERGENCY)
   userId      String
   user        User      @relation(fields: [userId], references: [id])
 }

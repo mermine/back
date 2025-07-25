@@ -8,6 +8,7 @@
         "@hono/zod-validator": "^0.7.0",
         "@prisma/client": "^6.11.1",
         "@types/argon2": "^0.15.4",
+        "date-fns": "^4.1.0",
         "dotenv": "^17.0.1",
         "hono": "^4.8.3",
         "prisma": "^6.11.1",
@@ -15,6 +16,7 @@
         "zod-openapi": "^4.2.4",
       },
       "devDependencies": {
+        "@types/date-fns": "^2.5.3",
         "@types/node": "^20.11.17",
         "tsx": "^4.7.1",
         "typescript": "^5.8.3",
@@ -94,9 +96,13 @@
 
     "@types/argon2": ["@types/argon2@0.15.4", "", { "dependencies": { "argon2": "*" } }, "sha512-fZPJNvZTvoyt/okKhbyj99UsDOwqzEXYPvKqfK26mViH9JB/hOwzUwDUn5qbwq9XJkLw0kDcFNu6+bnb3u5a0A=="],
 
+    "@types/date-fns": ["@types/date-fns@2.6.3", "", { "dependencies": { "date-fns": "*" } }, "sha512-Ke1lw2Ni1t/wMUoLtKFmSNCLozcTBd6vmMqFP4hRzXn6qzkNt97bPAX0x5Y/c15DP43kKvwW1ycStD5+43jVQA=="],
+
     "@types/node": ["@types/node@20.19.4", "", { "dependencies": { "undici-types": "~6.21.0" } }, "sha512-OP+We5WV8Xnbuvw0zC2m4qfB/BJvjyCwtNjhHdJxV1639SGSKrLmJkc3fMnp2Qy8nJyHp8RO6umxELN/dS1/EA=="],
 
     "argon2": ["argon2@0.43.0", "", { "dependencies": { "@phc/format": "^1.0.0", "node-addon-api": "^8.3.1", "node-gyp-build": "^4.8.4" } }, "sha512-u/HKLcbWShVDhkfwI4hWyiUf3qyX8QhTfaIv2cWE18uqhXCmR5hb6Ed7oqYi2KCQegeAnRhiFzbjzm7i5yl1GA=="],
+
+    "date-fns": ["date-fns@4.1.0", "", {}, "sha512-Ukq0owbQXxa/U3EGtsdVBkR1w7KOQ5gIBqdH2hkvknzZPYvBxb/aa6E8L7tmjFtkwZBu3UXBbjIgPo/Ez4xaNg=="],
 
     "dotenv": ["dotenv@17.0.1", "", {}, "sha512-GLjkduuAL7IMJg/ZnOPm9AnWKJ82mSE2tzXLaJ/6hD6DhwGfZaXG77oB8qbReyiczNxnbxQKyh0OE5mXq0bAHA=="],
 
