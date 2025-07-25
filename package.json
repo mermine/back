@@ -11,6 +11,7 @@
     "reset": "prisma migrate reset"
   },
   "dependencies": {
+    "@faker-js/faker": "^9.9.0",
     "@hono/node-server": "^1.15.0",
     "@hono/zod-validator": "^0.7.0",
     "@prisma/client": "^6.11.1",

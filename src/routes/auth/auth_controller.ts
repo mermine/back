@@ -48,7 +48,6 @@ export const authController = new Hono()
       return c.json({ error: "Registration failed." }, 500);
     }
   })
-
   .post("/login", zValidator("json", loginSchema), async (c) => {
     try {
       const { email, password } = c.req.valid("json");
