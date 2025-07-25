@@ -1,4 +1,4 @@
-import { MaritalStatus, Role } from "@prisma/client";
+import { MaritalStatus, Role, ServiceEnum } from "@prisma/client";
 import { z } from "zod";
 
 export const registerSchema = z.object({
@@ -13,7 +13,7 @@ export const registerSchema = z.object({
   cnssNumber: z.coerce.number().min(1, "CNSS number is required"),
   maritalStatus: z.nativeEnum(MaritalStatus).default(MaritalStatus.SINGLE),
   jobTitle: z.string().min(1, "Job title is required"),
-  service: z.string().min(1, "Service is required"),
+  service: z.nativeEnum(ServiceEnum).default(ServiceEnum.ANESTHESIOLOGY),
 });
 
 export const updateUserSchema = z.object({
@@ -25,5 +25,10 @@ export const updateUserSchema = z.object({
   cnssNumber: z.coerce.number().min(1, "CNSS number is required"),
   maritalStatus: z.nativeEnum(MaritalStatus).default(MaritalStatus.SINGLE),
   jobTitle: z.string().min(1, "Job title is required"),
-  service: z.string().min(1, "Service is required"),
+  service: z.nativeEnum(ServiceEnum).default(ServiceEnum.ANESTHESIOLOGY),
+});
+
+export const loginSchema = z.object({
+  email: z.string().email("Invalid email address").min(1, "Email is required"),
+  password: z.string().min(8, "Password must be at least 8 characters long"),
 });
