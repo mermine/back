@@ -1,8 +1,8 @@
 import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 import { db } from "@/lib/prisma_client";
-import * as jwt from "jsonwebtoken";
-import argon2 from "argon2";
+import jwt from "jsonwebtoken";
+import { hashSync, compareSync } from "bcrypt";
 import { env } from "@/dotenv_config";
 import { loginSchema, registerSchema } from "./schema";
 
@@ -19,23 +19,18 @@ export const authController = new Hono()
         return c.json({ error: "User already exists." }, 400);
       }
 
-      const hashedPassword = await argon2.hash(data.password);
-
       const newUser = await db.user.create({
         data: {
           ...data,
-          password: hashedPassword,
+          password: hashSync(data.password, 10),
         },
       });
 
       // Generate JWT token after user creation
       const token = jwt.sign(
-        {
-          userId: newUser.id,
-          role: newUser.role,
-        },
+        { userId: newUser.id, role: newUser.role },
         env.JWT_SECRET,
-        { expiresIn: "7d" }
+        { expiresIn: "1h" }
       );
 
       return c.json({
@@ -64,8 +59,7 @@ export const authController = new Hono()
         return c.json({ error: "User does not exist." }, 401);
       }
 
-      const valid = await argon2.verify(user.password, password);
-
+      const valid = compareSync(password, user.password);
       if (!valid) {
         return c.json({ error: "Invalid password." }, 401);
       }
@@ -73,7 +67,7 @@ export const authController = new Hono()
       const token = jwt.sign(
         { userId: user.id, role: user.role },
         env.JWT_SECRET,
-        { expiresIn: "7d" }
+        { expiresIn: "1h" }
       );
 
       return c.json({

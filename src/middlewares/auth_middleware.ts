@@ -1,5 +1,5 @@
 import { createMiddleware } from "hono/factory";
-import * as jwt from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import { AdditionalContext, PayloadType } from "../types";
 import { db } from "@/lib/prisma_client";
 import { env } from "@/dotenv_config";
