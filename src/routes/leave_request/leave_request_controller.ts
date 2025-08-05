@@ -6,17 +6,39 @@ import { createLeaveRequestSchema, updateLeaveRequestSchema } from "./schema/";
 const leaveRequestApp = new Hono()
 
   // Create LeaveRequest
-  .post("/create", zValidator("json", createLeaveRequestSchema), async (c) => {
-    const data = c.req.valid("json");
+ .post("/create", zValidator("json", createLeaveRequestSchema), async (c) => {
+  const {
+    startDate,
+    endDate,
+    status,
+    reason,
+    comment,
+    userId,
+    typeCongeId,
+  
+  } = c.req.valid("json");
 
-    try {
-      const leaveRequest = await db.leaveRequest.create({ data });
-      return c.json({ message: "Leave request created", leaveRequest });
-    } catch (err) {
-      console.error("Error creating leave request:", err);
-      return c.json({ error: "Failed to create leave request" }, 500);
-    }
-  })
+  try {
+    const leaveRequest = await db.leaveRequest.create({
+      data: {
+        startDate,
+        endDate,
+        status,
+        reason,
+        comment,
+        
+        user: { connect: { id: userId } },
+        typeConge: { connect: { id: typeCongeId } },
+      },
+    });
+
+    return c.json({ message: "Leave request created", leaveRequest });
+  } catch (err) {
+    console.error("Error creating leave request:", err instanceof Error ? err.message : err);
+    console.error("Full error object:", err);
+    return c.json({ error: "Failed to create leave request" }, 500);
+  }
+})
   .put(
     "/update/:id",
     zValidator("json", updateLeaveRequestSchema),
