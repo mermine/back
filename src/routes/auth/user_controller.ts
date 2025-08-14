@@ -124,6 +124,15 @@ const app = new Hono()
       console.error("Error deleting user:", error);
       return c.json({ error: "Failed to delete user." }, 500);
     }
+  })
+  .get("/roles", async (c) => {
+    try {
+      const roles = Object.values(Role).filter((role) => role !== Role.ADMIN);
+      return c.json({ message: "Roles fetched successfully.", data: roles });
+    } catch (error) {
+      console.error("Error fetching roles:", error);
+      return c.json({ error: "Failed to fetch roles." }, 500);
+    }
   });
 
 export default app;
