@@ -4,9 +4,28 @@ import { db } from "@/lib/prisma_client";
 import { authMiddleware } from "@/middlewares/auth_middleware";
 import { updateUserSchema } from "./schema";
 import { roleMiddleware } from "@/middlewares/role_middleware";
-import { Role } from "@prisma/client";
+import { MaritalStatus, Role, ServiceEnum } from "@prisma/client";
 
 const app = new Hono()
+  .get("/registration-options", async (c) => {
+    try {
+      const roles = Object.values(Role).filter((role) => role !== Role.ADMIN);
+      const statusMarital = Object.values(MaritalStatus);
+      const service = Object.values(ServiceEnum);
+
+      return c.json({
+        message: "Roles fetched successfully.",
+        data: {
+          roles,
+          statusMarital,
+          service,
+        },
+      });
+    } catch (error) {
+      console.error("Error fetching roles:", error);
+      return c.json({ error: "Failed to fetch roles." }, 500);
+    }
+  })
   .use("*", authMiddleware)
   .get("/all", roleMiddleware([Role.ADMIN]), async (c) => {
     try {
@@ -123,15 +142,6 @@ const app = new Hono()
     } catch (error) {
       console.error("Error deleting user:", error);
       return c.json({ error: "Failed to delete user." }, 500);
-    }
-  })
-  .get("/roles", async (c) => {
-    try {
-      const roles = Object.values(Role).filter((role) => role !== Role.ADMIN);
-      return c.json({ message: "Roles fetched successfully.", data: roles });
-    } catch (error) {
-      console.error("Error fetching roles:", error);
-      return c.json({ error: "Failed to fetch roles." }, 500);
     }
   });
 

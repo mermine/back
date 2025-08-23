@@ -15,7 +15,7 @@ enum Gender {
 enum Role {
   ADMIN
   EMPOYEE
-  MANAGER
+  CHEF_SERVICE
 }
 
 enum MaritalStatus {
