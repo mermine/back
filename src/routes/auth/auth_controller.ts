@@ -136,19 +136,9 @@ const app = new Hono()
             500
           );
         }
-        const responseData: any = {
-          message: "Verification code sent successfully.",
-        };
-
-        if (env.NODE_ENV === "development" && !emailSent) {
-          responseData.debug = { resetCode };
-          console.log(
-            `🔧 Development mode: Reset code for ${email}: ${resetCode}`
-          );
-        }
 
         return c.json(
-          ResponseTemplate.success(responseData.message, responseData)
+          ResponseTemplate.success("Verification code sent successfully.")
         );
       } catch (error) {
         console.error("Forgot password error:", error);
@@ -199,9 +189,7 @@ const app = new Hono()
         });
 
         return c.json(
-          ResponseTemplate.success("Verification code accepted.", {
-            resetToken,
-          })
+          ResponseTemplate.success("Verification code accepted.", resetToken)
         );
       } catch (error) {
         console.error("Verify code error:", error);
