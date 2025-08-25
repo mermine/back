@@ -3,7 +3,7 @@ import { faker } from "@faker-js/faker";
 import { db } from "@/lib/prisma_client";
 import { hashSync } from "bcrypt";
 
-const ROLES = [Role.ADMIN, Role.EMPOYEE, Role.MANAGER];
+const ROLES = [Role.ADMIN, Role.EMPOYEE, Role.CHEF_SERVICE];
 const MARITAL_STATUSES = Object.values(MaritalStatus);
 const SERVICES = Object.values(ServiceEnum);
 

@@ -5,8 +5,36 @@ import { createLeaveTypeSchema, updateLeaveTypeSchema } from "./schema";
 import { authMiddleware } from "@/middlewares/auth_middleware";
 import { roleMiddleware } from "@/middlewares/role_middleware";
 import { Role } from "@prisma/client";
+import { ResponseTemplate } from "@/constants";
 
 const app = new Hono()
+  .get("/all", async (c) => {
+    try {
+      const leaveTypes = await db.leaveType.findMany();
+      return c.json(
+        ResponseTemplate.success("Leave types fetched", leaveTypes),
+        200
+      );
+    } catch (err) {
+      console.error("Error fetching leave types:", err);
+      return c.json(ResponseTemplate.error("Failed to fetch leave types"), 500);
+    }
+  })
+  .get("/detail/:id", async (c) => {
+    const { id } = c.req.param();
+    try {
+      const leaveType = await db.leaveType.findUnique({
+        where: { id: Number(id) },
+      });
+      if (!leaveType) return c.json({ error: "Leave type not found" }, 404);
+      return c.json(
+        ResponseTemplate.success("Leave type fetched", leaveType),
+        200
+      );
+    } catch (err) {
+      return c.json({ error: "Failed to fetch leave type" }, 500);
+    }
+  })
   .use("*", authMiddleware)
   .post(
     "/create",
@@ -17,15 +45,19 @@ const app = new Hono()
 
       try {
         const leaveType = await db.leaveType.create({ data });
-        return c.json({ message: "Leave type created", leaveType });
+        return c.json(
+          ResponseTemplate.success("Leave type created", leaveType),
+          201
+        );
       } catch (err) {
         console.error("Error creating leave type:", err);
-        return c.json({ error: "Failed to create leave type" }, 500);
+        return c.json(
+          ResponseTemplate.error("Failed to create leave type"),
+          500
+        );
       }
     }
   )
-
-  // Update LeaveType
   .put(
     "/update/:id",
     zValidator("json", updateLeaveTypeSchema),
@@ -35,44 +67,30 @@ const app = new Hono()
       const data = c.req.valid("json");
 
       try {
-        const updated = await db.leaveType.update({ where: { id }, data });
-        return c.json({ message: "Leave type updated", updated });
+        const updated = await db.leaveType.update({
+          where: { id: Number(id) },
+          data,
+        });
+        return c.json(
+          ResponseTemplate.success("Leave type updated", updated),
+          200
+        );
       } catch (err) {
         console.error("Error updating leave type:", err);
-        return c.json({ error: "Leave type not found" }, 404);
+        return c.json(
+          ResponseTemplate.error("Failed to update leave type"),
+          500
+        );
       }
     }
   )
-
-  // Get all LeaveTypes
-  .get("/all", async (c) => {
-    try {
-      const leaveTypes = await db.leaveType.findMany();
-      return c.json({ message: "Leave types fetched", leaveTypes });
-    } catch (err) {
-      console.error("Error fetching leave types:", err);
-      return c.json({ error: "Failed to fetch leave types" }, 500);
-    }
-  })
-
-  // Get single LeaveType
-  .get("/affiche/:id", async (c) => {
-    const { id } = c.req.param();
-    try {
-      const leaveType = await db.leaveType.findUnique({ where: { id } });
-      if (!leaveType) return c.json({ error: "Leave type not found" }, 404);
-      return c.json({ message: "Leave type fetched", leaveType });
-    } catch (err) {
-      return c.json({ error: "Error" }, 500);
-    }
-  })
   .delete("/delete/:id", roleMiddleware([Role.ADMIN]), async (c) => {
     const { id } = c.req.param();
     try {
-      await db.leaveType.delete({ where: { id } });
-      return c.json({ message: "Leave type deleted" });
+      await db.leaveType.delete({ where: { id: Number(id) } });
+      return c.json(ResponseTemplate.success("Leave type deleted"), 200);
     } catch (err) {
-      return c.json({ error: "Failed to delete leave type" }, 500);
+      return c.json(ResponseTemplate.error("Failed to delete leave type"), 500);
     }
   });
 
