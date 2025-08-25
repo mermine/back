@@ -11,15 +11,9 @@ const leaveRequestApp = new Hono()
   .use("*", authMiddleware)
   .post("/create", zValidator("json", createLeaveRequestSchema), async (c) => {
     try {
-      const {
-        startDate,
-        endDate,
-        status,
-        reason,
-        comment,
-        userId,
-        typeCongeId,
-      } = c.req.valid("json");
+      const user = c.get("user");
+      const { startDate, endDate, status, reason, comment, typeCongeId } =
+        c.req.valid("json");
       const leaveRequest = await db.leaveRequest.create({
         data: {
           startDate,
@@ -27,7 +21,7 @@ const leaveRequestApp = new Hono()
           status,
           reason,
           comment,
-          user: { connect: { id: userId } },
+          user: { connect: { id: user.id } },
           typeConge: { connect: { id: Number(typeCongeId) } },
         },
       });
@@ -46,19 +40,14 @@ const leaveRequestApp = new Hono()
   })
   .put(
     "/update/:id",
+    roleMiddleware([Role.ADMIN, Role.CHEF_SERVICE]),
     zValidator("json", updateLeaveRequestSchema),
     async (c) => {
-      const { id } = c.req.param();
-      const {
-        startDate,
-        endDate,
-        status,
-        reason,
-        comment,
-        userId,
-        typeCongeId,
-      } = c.req.valid("json");
       try {
+        const user = c.get("user");
+        const { id } = c.req.param();
+        const { startDate, endDate, status, reason, comment, typeCongeId } =
+          c.req.valid("json");
         const existing = await db.leaveRequest.findUnique({ where: { id } });
         if (!existing) {
           return c.json(ResponseTemplate.error("Leave request not found"), 404);
@@ -82,7 +71,7 @@ const leaveRequestApp = new Hono()
             status,
             reason,
             comment,
-            user: { connect: { id: userId } },
+            user: { connect: { id: user.id } },
             typeConge: { connect: { id: Number(typeCongeId) } },
           },
         });
@@ -105,6 +94,16 @@ const leaveRequestApp = new Hono()
         where: { userId: user.id },
         include: {
           typeConge: true,
+          user: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              jobTitle: true,
+              service: true,
+              phone: true,
+            },
+          },
         },
       });
       return c.json(
@@ -122,7 +121,16 @@ const leaveRequestApp = new Hono()
     try {
       const leaveRequests = await db.leaveRequest.findMany({
         include: {
-          user: true,
+          user: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              jobTitle: true,
+              service: true,
+              phone: true,
+            },
+          },
           typeConge: true,
         },
       });
@@ -148,6 +156,9 @@ const leaveRequestApp = new Hono()
               id: true,
               name: true,
               email: true,
+              jobTitle: true,
+              service: true,
+              phone: true,
             },
           },
           typeConge: true,
