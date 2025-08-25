@@ -2,59 +2,123 @@ import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
 import { db } from "@/lib/prisma_client";
 import { createLeaveRequestSchema, updateLeaveRequestSchema } from "./schema/";
+import { authMiddleware } from "@/middlewares/auth_middleware";
+import { roleMiddleware } from "@/middlewares/role_middleware";
+import { Role, LeaveStatus } from "@prisma/client";
+import { ResponseTemplate } from "@/constants";
 
 const leaveRequestApp = new Hono()
-
-  // Create LeaveRequest
- .post("/create", zValidator("json", createLeaveRequestSchema), async (c) => {
-  const {
-    startDate,
-    endDate,
-    status,
-    reason,
-    comment,
-    userId,
-    typeCongeId,
-  
-  } = c.req.valid("json");
-
-  try {
-    const leaveRequest = await db.leaveRequest.create({
-      data: {
+  .use("*", authMiddleware)
+  .post("/create", zValidator("json", createLeaveRequestSchema), async (c) => {
+    try {
+      const {
         startDate,
         endDate,
         status,
         reason,
         comment,
-        
-        user: { connect: { id: userId } },
-        typeConge: { connect: { id: typeCongeId } },
-      },
-    });
+        userId,
+        typeCongeId,
+      } = c.req.valid("json");
+      const leaveRequest = await db.leaveRequest.create({
+        data: {
+          startDate,
+          endDate,
+          status,
+          reason,
+          comment,
+          user: { connect: { id: userId } },
+          typeConge: { connect: { id: Number(typeCongeId) } },
+        },
+      });
 
-    return c.json({ message: "Leave request created", leaveRequest });
-  } catch (err) {
-    console.error("Error creating leave request:", err instanceof Error ? err.message : err);
-    console.error("Full error object:", err);
-    return c.json({ error: "Failed to create leave request" }, 500);
-  }
-})
+      return c.json(
+        ResponseTemplate.success("Leave request created", leaveRequest),
+        201
+      );
+    } catch (err) {
+      console.error("Error creating leave request:", err);
+      return c.json(
+        ResponseTemplate.error("Failed to create leave request"),
+        500
+      );
+    }
+  })
   .put(
     "/update/:id",
     zValidator("json", updateLeaveRequestSchema),
     async (c) => {
       const { id } = c.req.param();
-      const data = c.req.valid("json");
-
+      const {
+        startDate,
+        endDate,
+        status,
+        reason,
+        comment,
+        userId,
+        typeCongeId,
+      } = c.req.valid("json");
       try {
-        const updated = await db.leaveRequest.update({ where: { id }, data });
-        return c.json({ message: "Leave request updated", updated });
+        const existing = await db.leaveRequest.findUnique({ where: { id } });
+        if (!existing) {
+          return c.json(ResponseTemplate.error("Leave request not found"), 404);
+        }
+        if (
+          existing.status === LeaveStatus.APPROVED ||
+          existing.status === LeaveStatus.REJECTED
+        ) {
+          return c.json(
+            ResponseTemplate.error(
+              "Cannot update an approved or rejected leave request"
+            ),
+            400
+          );
+        }
+        const updated = await db.leaveRequest.update({
+          where: { id },
+          data: {
+            startDate,
+            endDate,
+            status,
+            reason,
+            comment,
+            user: { connect: { id: userId } },
+            typeConge: { connect: { id: Number(typeCongeId) } },
+          },
+        });
+        return c.json(
+          ResponseTemplate.success("Leave request updated", updated),
+          200
+        );
       } catch (err) {
-        return c.json({ error: "Failed to update leave request" }, 500);
+        return c.json(
+          ResponseTemplate.error("Failed to update leave request"),
+          500
+        );
       }
     }
   )
-  .get("/all", async (c) => {
+  .get("/user", async (c) => {
+    try {
+      const user = c.get("user");
+      const leaveRequests = await db.leaveRequest.findMany({
+        where: { userId: user.id },
+        include: {
+          typeConge: true,
+        },
+      });
+      return c.json(
+        ResponseTemplate.success("User leave requests fetched", leaveRequests),
+        200
+      );
+    } catch (error) {
+      return c.json(
+        ResponseTemplate.error("Failed to fetch user leave requests"),
+        500
+      );
+    }
+  })
+  .get("/all", roleMiddleware([Role.ADMIN, Role.CHEF_SERVICE]), async (c) => {
     try {
       const leaveRequests = await db.leaveRequest.findMany({
         include: {
@@ -62,12 +126,18 @@ const leaveRequestApp = new Hono()
           typeConge: true,
         },
       });
-      return c.json({ message: "Leave requests fetched", leaveRequests });
+      return c.json(
+        ResponseTemplate.success("Leave requests fetched", leaveRequests),
+        200
+      );
     } catch (err) {
-      return c.json({ error: "Failed to fetch leave requests" }, 500);
+      return c.json(
+        ResponseTemplate.error("Failed to fetch leave requests"),
+        500
+      );
     }
   })
-  .get("/affiche/:id", async (c) => {
+  .get("/detail/:id", async (c) => {
     const { id } = c.req.param();
     try {
       const leaveRequest = await db.leaveRequest.findUnique({
@@ -84,19 +154,42 @@ const leaveRequestApp = new Hono()
         },
       });
       if (!leaveRequest)
-        return c.json({ error: "Leave request not found" }, 404);
-      return c.json({ message: "Leave request fetched", leaveRequest });
+        return c.json(ResponseTemplate.error("Leave request not found"), 404);
+      return c.json(
+        ResponseTemplate.success("Leave request fetched", leaveRequest),
+        200
+      );
     } catch (err) {
-      return c.json({ error: "Failed to fetch leave request" }, 500);
+      return c.json(
+        ResponseTemplate.error("Failed to fetch leave request"),
+        500
+      );
     }
   })
   .delete("/delete/:id", async (c) => {
     const { id } = c.req.param();
     try {
+      const existing = await db.leaveRequest.findUnique({ where: { id } });
+      if (!existing)
+        return c.json(ResponseTemplate.error("Leave request not found"), 404);
+      if (
+        existing.status === LeaveStatus.APPROVED ||
+        existing.status === LeaveStatus.REJECTED
+      ) {
+        return c.json(
+          ResponseTemplate.error(
+            "Cannot delete an approved or rejected leave request"
+          ),
+          400
+        );
+      }
       await db.leaveRequest.delete({ where: { id } });
-      return c.json({ message: "Leave request deleted" });
+      return c.json(ResponseTemplate.success("Leave request deleted"), 200);
     } catch (err) {
-      return c.json({ error: "Failed to delete leave request" }, 500);
+      return c.json(
+        ResponseTemplate.error("Failed to delete leave request"),
+        500
+      );
     }
   });
 
