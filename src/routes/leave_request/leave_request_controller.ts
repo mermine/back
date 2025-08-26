@@ -24,6 +24,30 @@ const leaveRequestApp = new Hono()
           user: { connect: { id: user.id } },
           typeConge: { connect: { id: Number(typeCongeId) } },
         },
+        select: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              jobTitle: true,
+              service: true,
+              phone: true,
+            },
+          },
+          typeConge: true,
+          comment: true,
+          id: true,
+          requestNumber: true,
+          startDate: true,
+          endDate: true,
+          status: true,
+          reason: true,
+          createdAt: true,
+          updatedAt: true,
+          attachmentUrl: true,
+          typeCongeId: true,
+        },
       });
 
       return c.json(
