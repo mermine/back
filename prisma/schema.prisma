@@ -111,6 +111,7 @@ model LeaveType {
 
 model LeaveRequest {
   id            String     @id @default(uuid())
+  requestNumber Int       @unique @default(autoincrement())
   startDate     DateTime
   endDate       DateTime
   status        LeaveStatus @default(PENDING)
