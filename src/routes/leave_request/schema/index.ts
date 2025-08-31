@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { LeaveStatus } from "@prisma/client";
+import { LeaveStatus, LeaveTypeEnum } from "@prisma/client";
 
 export const createLeaveRequestSchema = z.object({
   typeCongeId: z.string().min(1, "Type of leave ID is required"),
@@ -12,3 +12,10 @@ export const createLeaveRequestSchema = z.object({
 });
 
 export const updateLeaveRequestSchema = createLeaveRequestSchema.partial();
+
+export const filterLeaveRequestSchema = z.object({
+  status: z.nativeEnum(LeaveStatus).optional(),
+  startDate: z.string().datetime().optional(),
+  endDate: z.string().datetime().optional(),
+  typeConge: z.nativeEnum(LeaveTypeEnum).optional(),
+});

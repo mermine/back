@@ -1,7 +1,11 @@
 import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
 import { db } from "@/lib/prisma_client";
-import { createLeaveRequestSchema, updateLeaveRequestSchema } from "./schema/";
+import {
+  createLeaveRequestSchema,
+  filterLeaveRequestSchema,
+  updateLeaveRequestSchema,
+} from "./schema/";
 import { authMiddleware } from "@/middlewares/auth_middleware";
 import { roleMiddleware } from "@/middlewares/role_middleware";
 import { Role, LeaveStatus } from "@prisma/client";
@@ -111,11 +115,18 @@ const leaveRequestApp = new Hono()
       }
     }
   )
-  .get("/user", async (c) => {
+  .get("/user", zValidator("query", filterLeaveRequestSchema), async (c) => {
     try {
       const user = c.get("user");
+      const { status, startDate, endDate, typeConge } = c.req.valid("query");
       const leaveRequests = await db.leaveRequest.findMany({
-        where: { userId: user.id },
+        where: {
+          userId: user.id,
+          status,
+          startDate,
+          endDate,
+          typeConge: { type: typeConge },
+        },
         include: {
           typeConge: true,
           user: {
@@ -141,34 +152,46 @@ const leaveRequestApp = new Hono()
       );
     }
   })
-  .get("/all", roleMiddleware([Role.ADMIN, Role.CHEF_SERVICE]), async (c) => {
-    try {
-      const leaveRequests = await db.leaveRequest.findMany({
-        include: {
-          user: {
-            select: {
-              id: true,
-              name: true,
-              email: true,
-              jobTitle: true,
-              service: true,
-              phone: true,
+  .get(
+    "/all",
+    zValidator("query", filterLeaveRequestSchema),
+    roleMiddleware([Role.ADMIN, Role.CHEF_SERVICE]),
+    async (c) => {
+      try {
+        const { status, startDate, endDate, typeConge } = c.req.valid("query");
+        const leaveRequests = await db.leaveRequest.findMany({
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+                jobTitle: true,
+                service: true,
+                phone: true,
+              },
             },
+            typeConge: true,
           },
-          typeConge: true,
-        },
-      });
-      return c.json(
-        ResponseTemplate.success("Leave requests fetched", leaveRequests),
-        200
-      );
-    } catch (err) {
-      return c.json(
-        ResponseTemplate.error("Failed to fetch leave requests"),
-        500
-      );
+          where: {
+            status,
+            startDate,
+            endDate,
+            typeConge: { type: typeConge },
+          },
+        });
+        return c.json(
+          ResponseTemplate.success("Leave requests fetched", leaveRequests),
+          200
+        );
+      } catch (err) {
+        return c.json(
+          ResponseTemplate.error("Failed to fetch leave requests"),
+          500
+        );
+      }
     }
-  })
+  )
   .get("/detail/:id", async (c) => {
     const { id } = c.req.param();
     try {
