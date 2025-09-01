@@ -30,9 +30,10 @@ const app = new Hono()
   .get("/all", roleMiddleware([Role.ADMIN]), async (c) => {
     try {
       const page = Number(c.req.query("page") || 1);
-      const limit = Number(c.req.query("limit") || 10);
+      const limitParam = c.req.query("limit");
+      const limit = limitParam ? Number(limitParam) : undefined;
       const search = c.req.query("search") || "";
-      const skip = (page - 1) * limit;
+      const skip = limit ? (page - 1) * limit : 0;
 
       const searchFilter = search
         ? {
@@ -46,8 +47,7 @@ const app = new Hono()
       const [totalItems, users] = await Promise.all([
         db.user.count({ where: searchFilter }),
         db.user.findMany({
-          skip,
-          take: limit,
+          ...(limit && { skip, take: limit }),
           where: searchFilter,
           orderBy: { createdAt: "desc" },
           select: {
@@ -72,8 +72,8 @@ const app = new Hono()
         data: users,
         totalItems,
         pageInfo: {
-          hasPreviousPage: page > 1,
-          hasNextPage: page * limit < totalItems,
+          hasPreviousPage: limit ? page > 1 : false,
+          hasNextPage: limit ? page * limit < totalItems : false,
         },
       });
     } catch (error) {

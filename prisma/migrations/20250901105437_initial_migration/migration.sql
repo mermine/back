@@ -1,0 +1,121 @@
+-- CreateTable
+CREATE TABLE `User` (
+    `id` VARCHAR(191) NOT NULL,
+    `name` VARCHAR(191) NOT NULL,
+    `email` VARCHAR(191) NOT NULL,
+    `password` VARCHAR(191) NOT NULL,
+    `phone` VARCHAR(191) NULL,
+    `role` ENUM('ADMIN', 'EMPLOYEE', 'CHEF_SERVICE') NOT NULL DEFAULT 'EMPLOYEE',
+    `dateOfBirth` VARCHAR(191) NULL,
+    `nationality` VARCHAR(191) NULL,
+    `cinNumber` INTEGER NULL,
+    `cnssNumber` INTEGER NULL,
+    `maritalStatus` ENUM('SINGLE', 'MARRIED', 'DIVORCED', 'WIDOWED') NOT NULL DEFAULT 'SINGLE',
+    `jobTitle` VARCHAR(191) NULL,
+    `service` ENUM('EMERGENCY', 'INTERNAL', 'CARDIOLOGY', 'PULMONOLOGY', 'NEUROLOGY', 'ONCOLOGY', 'ORTHOPEDICS', 'PEDIATRICS', 'GYNECOLOGY_AND_OBSTETRICS', 'GASTROENTEROLOGY', 'NEPHROLOGY', 'DERMATOLOGY', 'PSYCHIATRY', 'INFECTIOUS_DISEASES', 'ANESTHESIOLOGY', 'RADIOLOGY', 'SURGERY') NOT NULL DEFAULT 'EMERGENCY',
+    `resetToken` VARCHAR(191) NULL,
+    `resetTokenExpiry` DATETIME(3) NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NOT NULL,
+
+    UNIQUE INDEX `User_email_key`(`email`),
+    UNIQUE INDEX `User_resetToken_key`(`resetToken`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `Child` (
+    `id` VARCHAR(191) NOT NULL,
+    `name` VARCHAR(191) NOT NULL,
+    `dateOfBirth` VARCHAR(191) NOT NULL,
+    `gender` ENUM('MALE', 'FEMALE') NOT NULL DEFAULT 'MALE',
+    `userId` VARCHAR(191) NOT NULL,
+    `hasDisability` BOOLEAN NOT NULL DEFAULT false,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NOT NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `LeaveType` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `name` VARCHAR(191) NOT NULL,
+    `description` VARCHAR(191) NULL,
+    `type` ENUM('ANNUAL', 'SICK', 'MATERNITY', 'PATERNITY', 'UNPAID', 'OTHER') NOT NULL DEFAULT 'ANNUAL',
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `LeaveRequest` (
+    `id` VARCHAR(191) NOT NULL,
+    `requestNumber` INTEGER NOT NULL AUTO_INCREMENT,
+    `startDate` DATETIME(3) NOT NULL,
+    `endDate` DATETIME(3) NOT NULL,
+    `status` ENUM('PENDING', 'APPROVED', 'REJECTED', 'CANCELLED') NOT NULL DEFAULT 'PENDING',
+    `reason` VARCHAR(191) NULL,
+    `userId` VARCHAR(191) NOT NULL,
+    `typeCongeId` INTEGER NOT NULL,
+    `comment` VARCHAR(191) NULL,
+    `attachmentUrl` VARCHAR(191) NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NOT NULL,
+
+    UNIQUE INDEX `LeaveRequest_requestNumber_key`(`requestNumber`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `LeaveBalance` (
+    `id` VARCHAR(191) NOT NULL,
+    `year` INTEGER NOT NULL,
+    `initialBalance` DOUBLE NOT NULL,
+    `usedBalance` DOUBLE NOT NULL DEFAULT 0,
+    `remainingBalance` DOUBLE NOT NULL,
+    `userId` VARCHAR(191) NOT NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `Schedule` (
+    `id` VARCHAR(191) NOT NULL,
+    `date` DATETIME(3) NOT NULL,
+    `startTime` DATETIME(3) NOT NULL,
+    `endTime` DATETIME(3) NOT NULL,
+    `service` ENUM('EMERGENCY', 'INTERNAL', 'CARDIOLOGY', 'PULMONOLOGY', 'NEUROLOGY', 'ONCOLOGY', 'ORTHOPEDICS', 'PEDIATRICS', 'GYNECOLOGY_AND_OBSTETRICS', 'GASTROENTEROLOGY', 'NEPHROLOGY', 'DERMATOLOGY', 'PSYCHIATRY', 'INFECTIOUS_DISEASES', 'ANESTHESIOLOGY', 'RADIOLOGY', 'SURGERY') NOT NULL DEFAULT 'EMERGENCY',
+    `userId` VARCHAR(191) NOT NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `Task` (
+    `id` VARCHAR(191) NOT NULL,
+    `title` VARCHAR(191) NOT NULL,
+    `description` VARCHAR(191) NULL,
+    `dueDate` DATETIME(3) NULL,
+    `isCompleted` BOOLEAN NOT NULL DEFAULT false,
+    `userId` VARCHAR(191) NOT NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- AddForeignKey
+ALTER TABLE `Child` ADD CONSTRAINT `Child_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `LeaveRequest` ADD CONSTRAINT `LeaveRequest_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `LeaveRequest` ADD CONSTRAINT `LeaveRequest_typeCongeId_fkey` FOREIGN KEY (`typeCongeId`) REFERENCES `LeaveType`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `LeaveBalance` ADD CONSTRAINT `LeaveBalance_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `Schedule` ADD CONSTRAINT `Schedule_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `Task` ADD CONSTRAINT `Task_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

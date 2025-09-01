@@ -2,6 +2,7 @@ import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
 import { db } from "@/lib/prisma_client";
 import {
+  assignLeaveRequestSchema,
   createLeaveRequestSchema,
   filterLeaveRequestSchema,
   updateLeaveRequestSchema,
@@ -66,6 +67,64 @@ const leaveRequestApp = new Hono()
       );
     }
   })
+  .post(
+    "/assign/user",
+    roleMiddleware([Role.ADMIN, Role.CHEF_SERVICE]),
+    zValidator("json", assignLeaveRequestSchema),
+    async (c) => {
+      try {
+        const user = c.get("user");
+        const { startDate, endDate, status, reason, comment, typeCongeId } =
+          c.req.valid("json");
+        const leaveRequest = await db.leaveRequest.create({
+          data: {
+            startDate,
+            endDate,
+            status,
+            reason,
+            comment,
+            user: { connect: { id: user.id } },
+            typeConge: { connect: { id: Number(typeCongeId) } },
+          },
+          select: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+                jobTitle: true,
+                service: true,
+                phone: true,
+              },
+            },
+            typeConge: true,
+            comment: true,
+            id: true,
+            requestNumber: true,
+            startDate: true,
+            endDate: true,
+            status: true,
+            reason: true,
+            createdAt: true,
+            updatedAt: true,
+            attachmentUrl: true,
+            typeCongeId: true,
+          },
+        });
+
+        return c.json(
+          ResponseTemplate.success("Leave request created", leaveRequest),
+          201
+        );
+      } catch (err) {
+        console.error("Error creating leave request:", err);
+        return c.json(
+          ResponseTemplate.error("Failed to create leave request"),
+          500
+        );
+      }
+    }
+  )
   .put(
     "/update/:id",
     roleMiddleware([Role.ADMIN, Role.CHEF_SERVICE]),
@@ -108,6 +167,46 @@ const leaveRequestApp = new Hono()
           200
         );
       } catch (err) {
+        return c.json(
+          ResponseTemplate.error("Failed to update leave request"),
+          500
+        );
+      }
+    }
+  )
+  .patch(
+    "/patch/:id",
+    roleMiddleware([Role.ADMIN, Role.CHEF_SERVICE]),
+    zValidator("json", updateLeaveRequestSchema),
+    async (c) => {
+      try {
+        const { id } = c.req.param();
+        const { status } = c.req.valid("json");
+        const existing = await db.leaveRequest.findUnique({ where: { id } });
+        if (!existing) {
+          return c.json(ResponseTemplate.error("Leave request not found"), 404);
+        }
+        if (
+          existing.status === LeaveStatus.APPROVED ||
+          existing.status === LeaveStatus.REJECTED
+        ) {
+          return c.json(
+            ResponseTemplate.error(
+              "Cannot update an approved or rejected leave request"
+            ),
+            400
+          );
+        }
+        const updated = await db.leaveRequest.update({
+          where: { id },
+          data: { status },
+        });
+        return c.json(
+          ResponseTemplate.success("Leave request updated", updated),
+          200
+        );
+      } catch (err) {
+        console.log("err", err);
         return c.json(
           ResponseTemplate.error("Failed to update leave request"),
           500
