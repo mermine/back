@@ -9,8 +9,9 @@ import { cors } from "hono/cors";
 import leave_request from "@/routes/leave_request/leave_request_controller";
 import leaveType from "@/routes/leave_type/leave_type_controller";
 import leaveBalance from "@/routes/leave_balance/leave_balance_controller";
-// import schedule from "@/routes/shedule/shedule_controller";
+import schedule from "@/routes/shedule/shedule_controller";
 // import task from "@/routes/task/task_controller";
+
 const app = new Hono()
   .basePath("/api/v1")
   .use("*", cors())
@@ -22,8 +23,8 @@ const app = new Hono()
   .route("/child", childController)
   .route("/leave-request", leave_request)
   .route("/leave-type", leaveType)
-  .route("/leave-balance", leaveBalance);
-// .route("/schedule", schedule)
+  .route("/leave-balance", leaveBalance)
+  .route("/schedule", schedule);
 // .route("/task", task);
 export type AppType = typeof app;
 
