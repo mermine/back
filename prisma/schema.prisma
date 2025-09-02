@@ -105,6 +105,7 @@ model LeaveType {
   description   String?
   type          LeaveTypeEnum @default(ANNUAL)
   leaves        LeaveRequest[]
+  leaveBalances LeaveBalance[]
 }
 
 
@@ -133,9 +134,13 @@ model LeaveBalance {
   initialBalance   Float
   usedBalance      Float    @default(0)
   remainingBalance Float
-
   userId           String
   user             User     @relation(fields: [userId], references: [id])
+  typeCongeId      Int
+  typeConge        LeaveType @relation(fields: [typeCongeId], references: [id])
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  @@unique([userId, year, typeCongeId])
 }
 
 model Schedule {
