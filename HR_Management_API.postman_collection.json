@@ -1,0 +1,1205 @@
+{
+  "info": {
+    "_postman_id": "hr-management-api-collection",
+    "name": "HR Management API",
+    "description": "Complete API collection for HR Management System built with Hono.js and Prisma",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"password123\",\n  \"phone\": \"+1234567890\",\n  \"role\": \"EMPLOYEE\",\n  \"dateOfBirth\": \"1990-01-01T00:00:00.000Z\",\n  \"cinNumber\": \"12345678\",\n  \"cnssNumber\": \"123456789\",\n  \"maritalStatus\": \"SINGLE\",\n  \"jobTitle\": \"Software Developer\",\n  \"service\": \"IT\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Forgot Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john.doe@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/forgot-password",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "forgot-password"]
+            }
+          }
+        },
+        {
+          "name": "Verify Reset Code",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john.doe@example.com\",\n  \"code\": \"123456\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/verify-reset-code",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "verify-reset-code"]
+            }
+          }
+        },
+        {
+          "name": "Reset Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"resetToken\": \"reset_token_here\",\n  \"newPassword\": \"newpassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/reset-password",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "reset-password"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "User Management",
+      "item": [
+        {
+          "name": "Get Registration Options",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/user/registration-options",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "user", "registration-options"]
+            }
+          }
+        },
+        {
+          "name": "Get All Users (Admin Only)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/user/all?page=1&limit=10&search=",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "user", "all"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "search",
+                  "value": ""
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get My Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/user/my",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "user", "my"]
+            }
+          }
+        },
+        {
+          "name": "Update User Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe Updated\",\n  \"phone\": \"+1234567891\",\n  \"jobTitle\": \"Senior Developer\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/user/update",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "user", "update"]
+            }
+          }
+        },
+        {
+          "name": "Delete User Account",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/user/delete",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "user", "delete"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Children Management",
+      "item": [
+        {
+          "name": "Create Child",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Emma Doe\",\n  \"dateOfBirth\": \"2015-05-15T00:00:00.000Z\",\n  \"gender\": \"FEMALE\",\n  \"hasDisability\": false\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/child/create",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "child", "create"]
+            }
+          }
+        },
+        {
+          "name": "Get My Children",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/child/my",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "child", "my"]
+            }
+          }
+        },
+        {
+          "name": "Get Child Details",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/child/detail/{{child_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "child", "detail", "{{child_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Child",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Emma Doe Updated\",\n  \"hasDisability\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/child/update/{{child_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "child", "update", "{{child_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete Child",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/child/delete/{{child_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "child", "delete", "{{child_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Leave Types",
+      "item": [
+        {
+          "name": "Get All Leave Types",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/leave-type/all",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "leave-type", "all"]
+            }
+          }
+        },
+        {
+          "name": "Get Leave Type Details",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/leave-type/detail/{{leave_type_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "leave-type", "detail", "{{leave_type_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Create Leave Type (Admin Only)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Personal Leave\",\n  \"type\": \"PERSONAL\",\n  \"duration\": 10,\n  \"description\": \"Personal leave for personal matters\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/leave-type/create",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "leave-type", "create"]
+            }
+          }
+        },
+        {
+          "name": "Update Leave Type (Admin Only)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Personal Leave Updated\",\n  \"duration\": 15\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/leave-type/update/{{leave_type_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "leave-type", "update", "{{leave_type_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete Leave Type (Admin Only)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/leave-type/delete/{{leave_type_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "leave-type", "delete", "{{leave_type_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Leave Requests",
+      "item": [
+        {
+          "name": "Create Leave Request",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"startDate\": \"2024-12-15T00:00:00.000Z\",\n  \"endDate\": \"2024-12-20T00:00:00.000Z\",\n  \"status\": \"PENDING\",\n  \"reason\": \"Family vacation\",\n  \"comment\": \"Going on a family trip\",\n  \"typeCongeId\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/leave-request/create",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "leave-request", "create"]
+            }
+          }
+        },
+        {
+          "name": "Assign Leave Request (Admin/Chef Service)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"startDate\": \"2024-12-15T00:00:00.000Z\",\n  \"endDate\": \"2024-12-20T00:00:00.000Z\",\n  \"status\": \"APPROVED\",\n  \"reason\": \"Assigned by admin\",\n  \"comment\": \"Pre-approved leave\",\n  \"typeCongeId\": 1,\n  \"userId\": \"{{user_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/leave-request/assign/user",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "leave-request", "assign", "user"]
+            }
+          }
+        },
+        {
+          "name": "Get User Leave Requests",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/leave-request/user?status=PENDING",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "leave-request", "user"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "PENDING"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get All Leave Requests (Admin/Chef Service)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/leave-request/all?status=PENDING",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "leave-request", "all"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "PENDING"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Leave Request Details",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/leave-request/detail/{{leave_request_id}}",
+              "host": ["{{base_url}}"],
+              "path": [
+                "api",
+                "v1",
+                "leave-request",
+                "detail",
+                "{{leave_request_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Leave Request (Admin/Chef Service)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"startDate\": \"2024-12-16T00:00:00.000Z\",\n  \"endDate\": \"2024-12-21T00:00:00.000Z\",\n  \"status\": \"APPROVED\",\n  \"reason\": \"Updated family vacation\",\n  \"typeCongeId\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/leave-request/update/{{leave_request_id}}",
+              "host": ["{{base_url}}"],
+              "path": [
+                "api",
+                "v1",
+                "leave-request",
+                "update",
+                "{{leave_request_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Patch Leave Request Status (Admin/Chef Service)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"APPROVED\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/leave-request/patch/{{leave_request_id}}",
+              "host": ["{{base_url}}"],
+              "path": [
+                "api",
+                "v1",
+                "leave-request",
+                "patch",
+                "{{leave_request_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Leave Request",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/leave-request/delete/{{leave_request_id}}",
+              "host": ["{{base_url}}"],
+              "path": [
+                "api",
+                "v1",
+                "leave-request",
+                "delete",
+                "{{leave_request_id}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Leave Balance",
+      "item": [
+        {
+          "name": "Create Leave Balance (Admin Only)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"{{user_id}}\",\n  \"typeCongeId\": 1,\n  \"year\": 2024,\n  \"totalBalance\": 30,\n  \"usedBalance\": 0,\n  \"remainingBalance\": 30\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/leave-balance/create",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "leave-balance", "create"]
+            }
+          }
+        },
+        {
+          "name": "Get All Leave Balances (Admin Only)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/leave-balance/all",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "leave-balance", "all"]
+            }
+          }
+        },
+        {
+          "name": "Get User Leave Balance",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/leave-balance/user",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "leave-balance", "user"]
+            }
+          }
+        },
+        {
+          "name": "Get Specific User Leave Balance (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/leave-balance/user/{{user_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "leave-balance", "user", "{{user_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Get Leave Balance Details",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/leave-balance/show/{{balance_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "leave-balance", "show", "{{balance_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Leave Balance (Admin Only)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"totalBalance\": 35,\n  \"remainingBalance\": 30\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/leave-balance/update/{{balance_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "leave-balance", "update", "{{balance_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Leave Balance on Leave",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"startDate\": \"2024-12-15T00:00:00.000Z\",\n  \"endDate\": \"2024-12-20T00:00:00.000Z\",\n  \"typeCongeId\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/leave-balance/update-on-leave/{{user_id}}",
+              "host": ["{{base_url}}"],
+              "path": [
+                "api",
+                "v1",
+                "leave-balance",
+                "update-on-leave",
+                "{{user_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Leave Balance (Admin Only)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/leave-balance/delete/{{balance_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "leave-balance", "delete", "{{balance_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Schedule Management",
+      "item": [
+        {
+          "name": "Create Schedule (Admin/Chef Service)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"date\": \"2024-12-15T00:00:00.000Z\",\n  \"startTime\": \"2024-12-15T08:00:00.000Z\",\n  \"endTime\": \"2024-12-15T17:00:00.000Z\",\n  \"service\": \"IT\",\n  \"userId\": \"{{user_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/schedule/create",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "schedule", "create"]
+            }
+          }
+        },
+        {
+          "name": "Get All Schedules (Admin/Chef Service)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/schedule/all?date=2024-12-15&service=IT",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "schedule", "all"],
+              "query": [
+                {
+                  "key": "date",
+                  "value": "2024-12-15"
+                },
+                {
+                  "key": "service",
+                  "value": "IT"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get User Schedules",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/schedule/user?month=12&year=2024",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "schedule", "user"],
+              "query": [
+                {
+                  "key": "month",
+                  "value": "12"
+                },
+                {
+                  "key": "year",
+                  "value": "2024"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Specific User Schedules (Admin/Chef Service)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/schedule/user/{{user_id}}?month=12&year=2024",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "schedule", "user", "{{user_id}}"],
+              "query": [
+                {
+                  "key": "month",
+                  "value": "12"
+                },
+                {
+                  "key": "year",
+                  "value": "2024"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Schedule Details",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/schedule/show/{{schedule_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "schedule", "show", "{{schedule_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Schedule (Admin/Chef Service)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"startTime\": \"2024-12-15T09:00:00.000Z\",\n  \"endTime\": \"2024-12-15T18:00:00.000Z\",\n  \"service\": \"HR\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/schedule/update/{{schedule_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "schedule", "update", "{{schedule_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete Schedule (Admin/Chef Service)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/schedule/delete/{{schedule_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "schedule", "delete", "{{schedule_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Task Management",
+      "item": [
+        {
+          "name": "Create Task (Admin/Chef Service)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Complete Project Documentation\",\n  \"description\": \"Write comprehensive documentation for the HR system\",\n  \"dueDate\": \"2024-12-20T23:59:59.000Z\",\n  \"userId\": \"{{user_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/task/create",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "task", "create"]
+            }
+          }
+        },
+        {
+          "name": "Get All Tasks (Admin/Chef Service)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/task/all?status=pending&overdue=false",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "task", "all"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "pending"
+                },
+                {
+                  "key": "overdue",
+                  "value": "false"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get User Tasks",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/task/user?status=pending",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "task", "user"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "pending"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Specific User Tasks (Admin/Chef Service)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/task/user/{{user_id}}?status=completed",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "task", "user", "{{user_id}}"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "completed"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Task Details",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/task/show/{{task_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "task", "show", "{{task_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Task",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Complete Project Documentation - Updated\",\n  \"description\": \"Write comprehensive documentation for the HR system with examples\",\n  \"isCompleted\": false\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/task/update/{{task_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "task", "update", "{{task_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Toggle Task Completion",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/task/toggle/{{task_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "task", "toggle", "{{task_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete Task",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/task/delete/{{task_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "task", "delete", "{{task_id}}"]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3001",
+      "type": "string"
+    },
+    {
+      "key": "auth_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "user_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "child_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "leave_type_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "leave_request_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "balance_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "schedule_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "task_id",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}
