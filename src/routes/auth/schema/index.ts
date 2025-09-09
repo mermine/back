@@ -6,7 +6,7 @@ export const registerSchema = z.object({
   email: z.string().email().min(1, "Email is required"),
   password: z.string().min(6, "Password must be at least 6 characters"),
   phone: z.string().min(1, "Phone number is required"),
-  role: z.nativeEnum(Role).default(Role.EMPOYEE),
+  role: z.nativeEnum(Role).default(Role.EMPLOYEE),
   dateOfBirth: z.string().min(1, "Date of birth is required"),
   nationality: z.string().min(1, "Nationality is required"),
   cinNumber: z.coerce.number().min(1, "CIN number is required"),
